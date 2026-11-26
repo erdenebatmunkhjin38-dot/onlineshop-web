@@ -1,39 +1,13 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { ProductGrid } from "@/components/product-card";
-import { ButtonLink } from "@/components/ui";
-import type { Category, Product } from "@/lib/types";
-
-const phones: Category = { id: 1, name: "Гар утас", description: null };
-
-/** Жишээ бүтээгдэхүүн үүсгэх туслах функц */
-function mock(id: number, name: string, price: number, stockQuantity: number): Product {
-  return {
-    id,
-    name,
-    price,
-    stockQuantity,
-    description: "Жишээ тайлбар",
-    inStock: stockQuantity > 0,
-    imageUrl: null,
-    active: true,
-    category: phones,
-    createdAt: "2026-11-16T10:00:00",
-    updatedAt: "2026-11-16T10:00:00",
-  };
-}
-
-const MOCK_PRODUCTS: Product[] = [
-  mock(1, "iPhone 15", 3299000, 15),
-  mock(2, "Galaxy S24", 2899000, 8),
-  mock(3, "Pixel 9", 2599000, 0),
-  mock(4, "Утасны цэнэглэгч 20W", 45000, 120),
-];
-
-const MOCK_CATEGORIES = ["Гар утас", "Зөөврийн компьютер", "Ном", "Хүнс"];
+import { ProductGridSkeleton } from "@/components/skeletons";
+import { ButtonLink, Skeleton } from "@/components/ui";
+import { getCategories, searchProducts } from "@/lib/data/catalog";
 
 export default function HomePage() {
   return (
-    <main className="mx-auto w-full max-w-7xl space-y-12 px-4 py-8">
+    <div className="space-y-12">
       <section className="rounded-2xl bg-gradient-to-br from-brand-600 to-brand-700 px-8 py-14 text-white">
         <h1 className="max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
           Хэрэгтэй бүхнээ нэг дороос
@@ -47,16 +21,40 @@ export default function HomePage() {
         </ButtonLink>
       </section>
 
+      {/* Ангилал + шинэ бүтээгдэхүүн: нэг Suspense */}
+      <Suspense fallback={<CategoriesAndLatestSkeleton />}>
+        <CategoriesAndLatest />
+      </Suspense>
+
+      <section>
+        <h2 className="mb-4 text-xl font-semibold">Хамгийн хямд бүтээгдэхүүн</h2>
+        <Suspense fallback={<ProductGridSkeleton count={4} />}>
+          <CheapestProducts />
+        </Suspense>
+      </section>
+    </div>
+  );
+}
+
+async function CategoriesAndLatest() {
+  // Хоёр хүсэлт зэрэг эхэлж, хоёулаа дууссаны дараа үргэлжилнэ
+  const [categories, latest] = await Promise.all([
+    getCategories(),
+    searchProducts({ size: 8, sort: "id,desc" }),
+  ]);
+
+  return (
+    <div className="space-y-12">
       <section>
         <h2 className="mb-4 text-xl font-semibold">Ангилал</h2>
         <div className="flex flex-wrap gap-2">
-          {MOCK_CATEGORIES.map((name) => (
+          {categories.map((category) => (
             <Link
-              key={name}
-              href="/products"
-              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm hover:border-brand-500 hover:text-brand-600"
+              key={category.id}
+              href={`/products?categoryId=${category.id}`}
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm hover:border-brand-500"
             >
-              {name}
+              {category.name}
             </Link>
           ))}
         </div>
@@ -64,8 +62,22 @@ export default function HomePage() {
 
       <section>
         <h2 className="mb-4 text-xl font-semibold">Шинэ бүтээгдэхүүн</h2>
-        <ProductGrid products={MOCK_PRODUCTS} />
+        <ProductGrid products={latest.content} />
       </section>
-    </main>
+    </div>
   );
+}
+
+function CategoriesAndLatestSkeleton() {
+  return (
+    <div className="space-y-12">
+      <Skeleton className="h-20 w-full" />
+      <ProductGridSkeleton count={8} />
+    </div>
+  );
+}
+
+async function CheapestProducts() {
+  const cheapest = await searchProducts({ size: 4, sort: "price,asc" });
+  return <ProductGrid products={cheapest.content} />;
 }

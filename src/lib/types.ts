@@ -77,6 +77,14 @@ export type Product = {
   updatedAt: string;
 };
 
+export type ProductQuery = {
+  categoryId?: number;
+  name?: string;
+  page?: number;
+  size?: number;
+  sort?: string;
+};
+
 // ---------- Захиалга ----------
 
 export type OrderStatus =

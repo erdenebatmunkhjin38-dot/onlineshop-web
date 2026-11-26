@@ -8,10 +8,12 @@ import { useEffect, useRef, type ReactNode } from "react";
  */ 
 export function Dropdown({ children }: { children: ReactNode }) {   const ref = useRef<HTMLDetailsElement>(null);   const pathname = usePathname(); 
   
-  // Хуудас солигдоход хаана   useEffect(() => { 
+  // Хуудас солигдоход хаана
+  useEffect(() => {
     if (ref.current) ref.current.open = false;   }, [pathname]); 
   
-  // Цэсний гадна дарахад хаана   useEffect(() => { 
+  // Цэсний гадна дарахад хаана
+  useEffect(() => {
     const onClick = (event: MouseEvent) => { 
       if (ref.current && !ref.current.contains(event.target as Node)) ref.current.open = false; 
     }; 
