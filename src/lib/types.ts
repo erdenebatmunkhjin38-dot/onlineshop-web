@@ -80,6 +80,10 @@ export type Product = {
 export type ProductQuery = {
   categoryId?: number;
   name?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  /** Зөвхөн нөөцтэй бараа. Backend дэмждэггүй тул searchProducts дотор шүүнэ */
+  inStock?: boolean;
   page?: number;
   size?: number;
   sort?: string;
