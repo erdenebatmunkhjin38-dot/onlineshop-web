@@ -40,7 +40,8 @@ export const inputClass =
 }: ComponentProps<"input"> & { label: string; name: string; error?: string; hint?: string }) {   return ( 
     <label className={cn("block", className)}> 
       <span className="mb-1 block text-sm font-medium text-slate-700">{label}</span> 
-      <input name={name} aria-invalid={!!error} className={inputClass} {...props} />       <FieldMessage error={error} hint={hint} /> 
+      <input name={name} aria-invalid={!!error} className={inputClass} {...props} />
+      <FieldMessage error={error} hint={hint} /> 
     </label> 
   ); 
 } 
@@ -49,7 +50,8 @@ export function TextArea({   label,   name,   error,   className,   ...props
 }: ComponentProps<"textarea"> & { label: string; name: string; error?: string }) {   return ( 
     <label className={cn("block", className)}> 
       <span className="mb-1 block text-sm font-medium text-slate-700">{label}</span> 
-      <textarea name={name} aria-invalid={!!error} className={inputClass} rows={4} {...props} />       <FieldMessage error={error} /> 
+      <textarea name={name} aria-invalid={!!error} className={inputClass} rows={4} {...props} />
+      <FieldMessage error={error} /> 
     </label> 
   ); 
 } 
@@ -57,7 +59,9 @@ export function TextArea({   label,   name,   error,   className,   ...props
 export function Select({   label,   name,   error,   className,   children,   ...props 
 }: ComponentProps<"select"> & { label: string; name: string; error?: string }) {   return ( 
     <label className={cn("block", className)}> 
-      <span className="mb-1 block text-sm font-medium text-slate-700">{label}</span>       <select name={name} aria-invalid={!!error} className={inputClass} {...props}>         {children} 
+      <span className="mb-1 block text-sm font-medium text-slate-700">{label}</span>
+      <select name={name} aria-invalid={!!error} className={inputClass} {...props}>
+      {children} 
       </select> 
       <FieldMessage error={error} /> 
     </label> 
@@ -71,7 +75,7 @@ function FieldMessage({ error, hint }: { error?: string; hint?: string }) {   if
 export function Alert({ ok, children }: { ok?: boolean; children: ReactNode }) {   return (     <div 
       role={ok ? "status" : "alert"}       className={cn( 
         "rounded-lg border px-4 py-3 text-sm", 
-        ok ? "border-green-200 bg-green-50 text-green-800" : "border-red-200 bg-red-50 text-red800", 
+        ok ? "border-green-200 bg-green-50 text-green-800" : "border-red-200 bg-red-50 text-red-800", 
       )} 
     > 
       {children} 
@@ -87,14 +91,17 @@ export function Card({ className, ...props }: ComponentProps<"div">) {   return 
   
 export function PageTitle({ children, actions }: { children: ReactNode; actions?: ReactNode }) {   return ( 
     <div className="mb-6 flex flex-wrap items-center justify-between gap-3"> 
-      <h1 className="text-2xl font-bold tracking-tight">{children}</h1>       {actions && <div className="flex gap-2">{actions}</div>}     </div> 
+      <h1 className="text-2xl font-bold tracking-tight">{children}</h1>
+      {actions && <div className="flex gap-2">{actions}</div>}
+      </div> 
   ); 
 } 
   
 export function EmptyState({ title, children }: { title: string; children?: ReactNode }) {   return ( 
-    <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 textcenter"> 
+    <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center"> 
       <p className="font-medium text-slate-700">{title}</p> 
-      {children && <div className="mt-4 text-sm text-slate-500">{children}</div>}     </div> 
+      {children && <div className="mt-4 text-sm text-slate-500">{children}</div>}
+      </div> 
   ); 
 } 
   
@@ -105,7 +112,8 @@ export function Skeleton({ className }: { className?: string }) {   return <div 
 // ---------- Хүснэгт ---------- 
   
 export function Table({ children }: { children: ReactNode }) {   return ( 
-    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">       <table className="w-full text-left text-sm">{children}</table> 
+    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+    <table className="w-full text-left text-sm">{children}</table> 
     </div> 
   ); 
 } 

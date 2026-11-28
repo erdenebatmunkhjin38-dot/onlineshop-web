@@ -22,7 +22,8 @@ export function Pagination({   page,   totalPages,   pathname,   params = {},
   const item = "flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm"; 
   
   return ( 
-    <nav aria-label="Хуудаслалт" className="mt-8 flex items-center justify-center gap-1">       {page > 0 ? ( 
+    <nav aria-label="Хуудаслалт" className="mt-8 flex items-center justify-center gap-1">
+    {page > 0 ? ( 
         <Link href={href(page - 1)} className={cn(item, "hover:bg-slate-200")}>           ← Өмнөх 
         </Link>       ) : ( 
         <span className={cn(item, "text-slate-300")}>← Өмнөх</span>       )} 

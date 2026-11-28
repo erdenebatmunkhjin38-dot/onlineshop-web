@@ -7,7 +7,8 @@ import { ProductGridSkeleton } from "@/components/skeletons";
 import { Skeleton } from "@/components/ui";
 import { getProduct, searchProducts } from "@/lib/data/catalog";
 import { formatPrice } from "@/lib/format";
-  
+import { AddToCart } from "./add-to-cart";
+
 type Params = PageProps<"/products/[id]">["params"]; 
   
 /** id тоо биш бол (жишээ нь /products/abc) backend руу хандахгүйгээр 404 */
@@ -44,7 +45,8 @@ async function ProductDetail({ params }: { params: Params }) {   const product =
           Бүтээгдэхүүн 
         </Link> 
         <span className="mx-2">/</span> 
-        <Link href={`/products?categoryId=${product.category.id}`} className="hover:text-slate-900">           {product.category.name} 
+        <Link href={`/products?categoryId=${product.category.id}`} className="hover:text-slate-900">
+        {product.category.name} 
         </Link> 
       </nav> 
   
@@ -55,19 +57,23 @@ async function ProductDetail({ params }: { params: Params }) {   const product =
   
         <div className="space-y-6"> 
           <div> 
-            <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>             <p className="mt-3 text-3xl font-semibold text-brand-600">{formatPrice(product.price)}</p>
+            <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>
+            <p className="mt-3 text-3xl font-semibold text-brand-600">{formatPrice(product.price)}</p>
           </div> 
   
-          <p className="text-sm">             {product.inStock ? ( 
+          <p className="text-sm">
+          {product.inStock ? ( 
               <span className="text-green-700">Бэлэн байгаа: {product.stockQuantity} ширхэг</span>             ) : ( 
               <span className="text-red-600">Дууссан</span> 
             )} 
-          </p> 
-  
+          </p>
+
+          <AddToCart productId={product.id} stock={product.stockQuantity} />
   
           <div className="border-t border-slate-200 pt-6"> 
             <h2 className="mb-2 font-semibold">Тайлбар</h2> 
-            <p className="whitespace-pre-line text-slate-700">{product.description}</p>           </div> 
+            <p className="whitespace-pre-line text-slate-700">{product.description}</p>
+            </div> 
         </div>
       </div>
 
@@ -114,7 +120,8 @@ function ProductSkeleton() {  return (
         <Skeleton className="h-9 w-3/4" /> 
         <Skeleton className="h-9 w-1/3" /> 
         <Skeleton className="h-12 w-full" /> 
-        <Skeleton className="h-32 w-full" />       </div> 
+        <Skeleton className="h-32 w-full" />
+        </div> 
     </div> 
   ); 
 } 

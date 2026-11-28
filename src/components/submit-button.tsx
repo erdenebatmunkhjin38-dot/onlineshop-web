@@ -9,6 +9,7 @@ export function SubmitButton({   children,
   pendingText = "Түр хүлээнэ үү...", 
   ...props 
 }: ComponentProps<typeof Button> & { pendingText?: string }) {   const { pending } = useFormStatus();   return ( 
-    <Button type="submit" disabled={pending || props.disabled} aria-busy={pending} {...props}>       {pending ? pendingText : children} 
+    <Button type="submit" disabled={pending || props.disabled} aria-busy={pending} {...props}>
+    {pending ? pendingText : children} 
     </Button> 
   ); } 

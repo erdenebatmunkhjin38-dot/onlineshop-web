@@ -11,7 +11,9 @@ export function ProductCard({ product, eager }: { product: Product; eager?: bool
         <span className="text-xs text-slate-500">{product.category.name}</span> 
         <h3 className="line-clamp-2 font-medium group-hover:text-brand-600">{product.name}</h3> 
         <div className="mt-auto flex items-end justify-between pt-2"> 
-          <span className="text-lg font-semibold">{formatPrice(product.price)}</span>           {!product.inStock && <span className="text-xs text-red-600">Дууссан</span>}         </div> 
+          <span className="text-lg font-semibold">{formatPrice(product.price)}</span>
+          {!product.inStock && <span className="text-xs text-red-600">Дууссан</span>}
+          </div> 
       </div> 
     </Link> 
   ); 

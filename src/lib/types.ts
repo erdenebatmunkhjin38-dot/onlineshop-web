@@ -91,9 +91,24 @@ export type ProductQuery = {
 
 // ---------- Сагс ----------
 
-/** Одоогоор зөвхөн толгойд хэрэглэдэг талбар. Бусдыг backend-ийн CartResponse-оос нэмнэ. */
+export type CartItem = {
+  productId: number;
+  productName: string;
+  imageUrl: string | null;
+  unitPrice: number;
+  quantity: number;
+  subtotal: number;
+  stockQuantity: number;
+  /** false бол худалдаанаас хасагдсан эсвэл нөөц хүрэлцэхгүй */
+  available: boolean;
+};
+
 export type Cart = {
+  items: CartItem[];
   totalQuantity: number;
+  totalAmount: number;
+  /** Бүх бараа захиалах боломжтой эсэх */
+  checkoutReady: boolean;
 };
 
 // ---------- Захиалга ----------

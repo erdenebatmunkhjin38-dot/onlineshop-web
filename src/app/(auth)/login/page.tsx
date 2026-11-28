@@ -11,7 +11,8 @@ export const metadata: Metadata = { title: "Нэвтрэх" };
       <p className="mt-1 mb-6 text-sm text-slate-600">Захиалга хийхийн тулд нэвтэрнэ үү.</p> 
       {param(sp.expired) && ( 
         <div className="mb-4"> 
-          <Alert>Таны нэвтрэлтийн хугацаа дууссан байна. Дахин нэвтэрнэ үү.</Alert>         </div> 
+          <Alert>Таны нэвтрэлтийн хугацаа дууссан байна. Дахин нэвтэрнэ үү.</Alert>
+          </div> 
       )} 
       <LoginForm next={next} /> 
       <p className="mt-6 text-center text-sm text-slate-600"> 
