@@ -12,5 +12,6 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {   ret
         <p className="mb-3 hidden px-3 text-xs font-semibold tracking-wider text-slate-400 uppercase lg:block">Админ</p> 
         <AdminNav /> 
       </aside> 
-      <div className="min-w-0">{children}</div>     </div> 
+      <div className="min-w-0">{children}</div>
+      </div> 
   ); } 

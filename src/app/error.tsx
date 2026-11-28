@@ -14,7 +14,8 @@ import { Button } from "@/components/ui";
       <p className="mt-2 text-sm text-slate-600"> 
         Хуудсыг ачаалах үед алдаа гарлаа. Сервертэй холболтоо шалгаад дахин оролдоно уу. 
       </p> 
-      {digest && <p className="mt-2 font-mono text-xs text-slate-400">Код: {digest}</p>}       <Button className="mt-6" onClick={() => retry()}> 
+      {digest && <p className="mt-2 font-mono text-xs text-slate-400">Код: {digest}</p>}
+      <Button className="mt-6" onClick={() => retry()}> 
         Дахин оролдох 
       </Button> 
     </div> 

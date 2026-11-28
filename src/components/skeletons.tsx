@@ -28,7 +28,8 @@ export function PageSkeleton() {   return (
 } 
   
 export function TableSkeleton({ rows = 6 }: { rows?: number }) {   return ( 
-    <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-4">       {Array.from({ length: rows }, (_, i) => ( 
+    <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-4">
+    {Array.from({ length: rows }, (_, i) => ( 
         <Skeleton key={i} className="h-10 w-full" /> 
       ))} 
     </div> 
