@@ -89,6 +89,13 @@ export type ProductQuery = {
   sort?: string;
 };
 
+// ---------- Сагс ----------
+
+/** Одоогоор зөвхөн толгойд хэрэглэдэг талбар. Бусдыг backend-ийн CartResponse-оос нэмнэ. */
+export type Cart = {
+  totalQuantity: number;
+};
+
 // ---------- Захиалга ----------
 
 export type OrderStatus =
@@ -97,3 +104,26 @@ export type OrderStatus =
   | "SHIPPED"
   | "DELIVERED"
   | "CANCELLED";
+
+export type OrderItem = {
+  productId: number;
+  productName: string;
+  unitPrice: number;
+  quantity: number;
+  subtotal: number;
+};
+
+export type Order = {
+  id: number;
+  orderNumber: string;
+  status: OrderStatus;
+  totalAmount: number;
+  customerId: number;
+  customerName: string;
+  shippingAddress: string | null;
+  shippingCity: string | null;
+  phone: string | null;
+  items: OrderItem[];
+  createdAt: string;
+  updatedAt: string;
+};

@@ -1,4 +1,5 @@
-import Link from "next/link"; 
+import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation"; import { Suspense } from "react"; 
 import { ProductCard } from "@/components/product-card";
 import { ProductImage } from "@/components/product-image";
@@ -20,13 +21,21 @@ async function loadProduct(params: Params) {
   return product;
 }
   
-export default function ProductPage({ params }: PageProps<"/products/[id]">) {   return ( 
-    <Suspense fallback={<ProductSkeleton />}> 
-      <ProductDetail params={params} /> 
-    </Suspense> 
-  ); 
-} 
-  
+/** Browser-ийн таб, хайлтын системд харагдах гарчиг */
+export async function generateMetadata({ params }: PageProps<"/products/[id]">): Promise<Metadata> {
+  const product = await loadProduct(params);
+  // description нь null байж болно: тэр үед root layout-ийн тайлбар үлдэнэ
+  return { title: product.name, description: product.description?.slice(0, 160) };
+}
+
+export default function ProductPage({ params }: PageProps<"/products/[id]">) {
+  return (
+    <Suspense fallback={<ProductSkeleton />}>
+      <ProductDetail params={params} />
+    </Suspense>
+  );
+}
+
 async function ProductDetail({ params }: { params: Params }) {   const product = await loadProduct(params); 
     return ( 
     <div> 
