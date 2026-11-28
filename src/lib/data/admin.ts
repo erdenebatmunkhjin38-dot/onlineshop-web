@@ -20,9 +20,51 @@ number }) {
   return api<PageResponse<Order>>("/orders", { query: { ...query, size: 15 } }); 
 } 
   
-export async function adminGetUsers(page = 0) {   await requireAdmin(); 
-  return api<PageResponse<User>>("/users", { query: { page, size: 15 } }); 
-} 
+export async function adminGetUsers({ username, page = 0 }: { username?: string; page?: number } = {}): Promise<PageResponse<User>> {
+  await requireAdmin();
+  const size = 15;
+  if (!username) return api<PageResponse<User>>("/users", { query: { page, size } });
+
+  // Backend нэрээр хайх параметргүй тул БҮХ хэрэглэгчийг татаж, шүүгээд, өөрсдөө хуудаслана.
+  const keyword = username.toLowerCase();
+  const found: User[] = [];
+  for (let p = 0, last = false; !last; p++) {
+    const batch = await api<PageResponse<User>>("/users", { query: { page: p, size: 100 } });
+    found.push(...batch.content.filter((u) => u.username.toLowerCase().includes(keyword)));
+    last = batch.last;
+  }
+
+  const totalPages = Math.ceil(found.length / size);
+  return {
+    content: found.slice(page * size, (page + 1) * size),
+    page,
+    size,
+    totalElements: found.length,
+    totalPages,
+    last: page >= totalPages - 1,
+  };
+}
+
+/**
+ * Өнөөдөр үүссэн, цуцлагдаагүй захиалгын нийт дүн.
+ * Backend-д ийм endpoint байхгүй тул шинэ захиалгаас эхлэн татаж, өмнөх өдрийн захиалга гармагц зогсоно.
+ * "Өнөөдөр" гэдгийг энэ (Next.js) серверийн цагийн бүсээр тооцно.
+ */
+async function getTodaySales() {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  let total = 0;
+  for (let page = 0, done = false; !done; page++) {
+    const batch = await api<PageResponse<Order>>("/orders", { query: { page, size: 100, sort: "createdAt,desc" } });
+    for (const order of batch.content) {
+      if (new Date(order.createdAt) < startOfToday) return total;
+      if (order.status !== "CANCELLED") total += order.totalAmount;
+    }
+    done = batch.last;
+  }
+  return total;
+}
   
 export async function adminGetUser(id: number) {   await requireAdmin(); 
   return orNull(api<User>(`/users/${id}`)); 
@@ -40,5 +82,5 @@ export async function adminGetCustomer(id: number) {   await requireAdmin();
   const count = (status: OrderStatus) => 
     api<PageResponse<Order>>("/orders", { query: { status, size: 1 } }).then((p) => p.totalElements); 
   
-  const [products, users, customers, pending, paid, shipped, recent] = await Promise.all([     api<PageResponse<Product>>("/products", { query: { includeInactive: true, size: 1 } }),     api<PageResponse<User>>("/users", { query: { size: 1 } }),     api<PageResponse<Customer>>("/customers", { query: { size: 1 } }),     count("PENDING"),     count("PAID"),     count("SHIPPED"),     api<PageResponse<Order>>("/orders", { query: { size: 5 } }),   ]); 
-    return {     productCount: products.totalElements,     userCount: users.totalElements,     customerCount: customers.totalElements,     orderCount: recent.totalElements,     pending,     paid,     shipped,     recentOrders: recent.content,   }; } 
+  const [products, users, customers, pending, paid, shipped, recent, todaySales] = await Promise.all([    api<PageResponse<Product>>("/products", { query: { includeInactive: true, size: 1 } }),     api<PageResponse<User>>("/users", { query: { size: 1 } }),     api<PageResponse<Customer>>("/customers", { query: { size: 1 } }),     count("PENDING"),     count("PAID"),     count("SHIPPED"),     api<PageResponse<Order>>("/orders", { query: { size: 5, sort: "createdAt,desc" } }),     getTodaySales(),   ]);
+    return {     productCount: products.totalElements,     userCount: users.totalElements,     customerCount: customers.totalElements,     orderCount: recent.totalElements,     pending,     paid,     shipped,     recentOrders: recent.content,     todaySales,   }; } 

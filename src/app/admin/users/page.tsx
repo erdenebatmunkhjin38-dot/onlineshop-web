@@ -1,15 +1,35 @@
-import type { Metadata } from "next"; import Link from "next/link"; 
+import type { Metadata } from "next"; import Form from "next/form"; import Link from "next/link";
 import { Pagination } from "@/components/pagination"; 
-import { Badge, PageTitle, Table, Td, Th } from "@/components/ui"; import { adminGetUsers } from "@/lib/data/admin"; import { formatDate } from "@/lib/format"; import { pageParam } from "@/lib/url"; 
+import { Badge, Button, ButtonLink, PageTitle, Table, Td, Th, inputClass } from "@/components/ui";import { adminGetUsers } from "@/lib/data/admin"; import { formatDate } from "@/lib/format"; import { pageParam, param } from "@/lib/url";
   
 export const metadata: Metadata = { title: "Хэрэглэгч" }; 
   
-export default async function AdminUsersPage({ searchParams }: PageProps<"/admin/users">) {   const users = await adminGetUsers(pageParam((await searchParams).page)); 
+export default async function AdminUsersPage({ searchParams }: PageProps<"/admin/users">) {
+  const sp = await searchParams;
+  const username = param(sp.username)?.trim() || undefined;
+  const users = await adminGetUsers({ username, page: pageParam(sp.page) });
   
   return ( 
     <> 
-      <PageTitle>Хэрэглэгч</PageTitle> 
-      <Table> 
+      <PageTitle>Хэрэглэгч</PageTitle>
+      {/* GET форм: илгээхэд /admin/users?username=... болно. key нь URL өөрчлөгдөхөд input-ийг шинэчилнэ. */}
+      <Form action="/admin/users" key={username ?? ""} className="mb-4 flex max-w-md gap-2">
+        <input
+          name="username"
+          type="search"
+          defaultValue={username}
+          placeholder="Нэвтрэх нэрээр хайх"
+          aria-label="Нэвтрэх нэрээр хайх"
+          className={inputClass}
+        />
+        <Button type="submit" className="shrink-0">Хайх</Button>
+        {username && (
+          <ButtonLink href="/admin/users" variant="secondary" className="shrink-0">
+            Цэвэрлэх
+          </ButtonLink>
+        )}
+      </Form>
+      <Table>
         <thead> 
           <tr> 
             <Th>Нэвтрэх нэр</Th> 
@@ -32,7 +52,14 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
               <Td>{u.roles.includes("ROLE_ADMIN") ? <Badge tone="blue">Админ</Badge> : <Badge>Хэрэглэгч</Badge>}</Td> 
               <Td>{u.enabled ? <Badge tone="green">Идэвхтэй</Badge> : <Badge tone="red">Түдгэлзсэн</Badge>}</Td> 
               <Td className="text-slate-600">{formatDate(u.createdAt)}</Td>             </tr> 
-          ))} 
-        </tbody>       </Table> 
-      <Pagination page={users.page} totalPages={users.totalPages} pathname="/admin/users" />     </> 
+          ))}
+          {users.content.length === 0 && (
+            <tr>
+              <Td colSpan={6} className="py-8 text-center text-slate-500">
+                Хэрэглэгч олдсонгүй
+              </Td>
+            </tr>
+          )}
+        </tbody>       </Table>
+      <Pagination page={users.page} totalPages={users.totalPages} pathname="/admin/users" params={{ username }} />     </> 
   ); } 

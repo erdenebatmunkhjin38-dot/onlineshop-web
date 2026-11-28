@@ -3,7 +3,8 @@ import { OrderStatusBadge } from "@/components/order-status"; import { Card, Pag
   
 export default async function AdminDashboard() {   const d = await adminGetDashboard(); 
   
-  const stats = [ 
+  const stats = [
+    { label: "Өнөөдрийн борлуулалт", value: formatPrice(d.todaySales), href: "/admin/orders" },
     { label: "Хүлээгдэж буй захиалга", value: d.pending, href: "/admin/orders?status=PENDING", highlight: d.pending > 0 }, 
     { label: "Төлөгдсөн (илгээх)", value: d.paid, href: "/admin/orders?status=PAID", highlight: d.paid > 0 }, 
     { label: "Хүргэлтэд", value: d.shipped, href: "/admin/orders?status=SHIPPED" }, 
