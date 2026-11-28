@@ -51,7 +51,8 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
               <Td className="text-slate-600">{u.email}</Td> 
               <Td>{u.roles.includes("ROLE_ADMIN") ? <Badge tone="blue">Админ</Badge> : <Badge>Хэрэглэгч</Badge>}</Td> 
               <Td>{u.enabled ? <Badge tone="green">Идэвхтэй</Badge> : <Badge tone="red">Түдгэлзсэн</Badge>}</Td> 
-              <Td className="text-slate-600">{formatDate(u.createdAt)}</Td>             </tr> 
+              <Td className="text-slate-600">{formatDate(u.createdAt)}</Td>
+            </tr> 
           ))}
           {users.content.length === 0 && (
             <tr>
@@ -60,6 +61,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
               </Td>
             </tr>
           )}
-        </tbody>       </Table>
+        </tbody>
+      </Table>
       <Pagination page={users.page} totalPages={users.totalPages} pathname="/admin/users" params={{ username }} />     </> 
   ); } 

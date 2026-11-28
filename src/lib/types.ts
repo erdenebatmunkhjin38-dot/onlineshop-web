@@ -84,6 +84,8 @@ export type ProductQuery = {
   maxPrice?: number;
   /** Зөвхөн нөөцтэй бараа. Backend дэмждэггүй тул searchProducts дотор шүүнэ */
   inStock?: boolean;
+  /** Админ: зөвхөн хасагдсан бараа. Backend дэмждэггүй тул adminSearchProducts дотор шүүнэ */
+  onlyInactive?: boolean;
   page?: number;
   size?: number;
   sort?: string;

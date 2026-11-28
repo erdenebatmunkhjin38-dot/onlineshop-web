@@ -1,14 +1,35 @@
-import "server-only"; 
+import "server-only";
+import { connection } from "next/server";
 import { api, orNull } from "@/lib/api"; import { requireAdmin } from "@/lib/data/dal"; import type { Customer, Order, OrderStatus, PageResponse, Product, ProductQuery, User } from 
 "@/lib/types"; 
   /** 
 *	Админы өгөгдөл. Функц бүр эхлээд requireAdmin() дуудна. 
 *	Идэвхгүй бараа, бусдын захиалга зэрэг нууц өгөгдөл тул кэшлэхгүй.  */ 
   
-export async function adminSearchProducts(query: ProductQuery) { 
-  await requireAdmin(); 
-  return api<PageResponse<Product>>("/products", { query: { ...query, includeInactive: true } }); 
-} 
+export async function adminSearchProducts({ onlyInactive, ...query }: ProductQuery): Promise<PageResponse<Product>> {
+  await requireAdmin();
+  const search = { ...query, includeInactive: true };
+  if (!onlyInactive) return api<PageResponse<Product>>("/products", { query: search });
+
+  // Backend "зөвхөн хасагдсан" параметргүй тул БҮХ барааг татаж, шүүгээд, өөрсдөө хуудаслана.
+  const { page = 0, size = 15 } = query;
+  const found: Product[] = [];
+  for (let p = 0, last = false; !last; p++) {
+    const batch = await api<PageResponse<Product>>("/products", { query: { ...search, page: p, size: 100 } });
+    found.push(...batch.content.filter((product) => !product.active));
+    last = batch.last;
+  }
+
+  const totalPages = Math.ceil(found.length / size);
+  return {
+    content: found.slice(page * size, (page + 1) * size),
+    page,
+    size,
+    totalElements: found.length,
+    totalPages,
+    last: page >= totalPages - 1,
+  };
+}
   
 /** Худалдаанаас хасагдсан барааг ч харна (ADMIN токентой). */ export async function adminGetProduct(id: number) {   await requireAdmin(); 
   return orNull(api<Product>(`/products/${id}`)); 
@@ -51,6 +72,7 @@ export async function adminGetUsers({ username, page = 0 }: { username?: string;
  * "Өнөөдөр" гэдгийг энэ (Next.js) серверийн цагийн бүсээр тооцно.
  */
 async function getTodaySales() {
+  await connection(); // new Date()-ийг хүсэлт бүрт тооцно (prerender хийхгүй)
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
