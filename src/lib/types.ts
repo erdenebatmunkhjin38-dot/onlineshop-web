@@ -113,12 +113,15 @@ export type Cart = {
 
 // ---------- Захиалга ----------
 
-export type OrderStatus =
-  | "PENDING"
-  | "PAID"
-  | "SHIPPED"
-  | "DELIVERED"
-  | "CANCELLED";
+export const ORDER_STATUSES = [
+  "PENDING",
+  "PAID",
+  "SHIPPED",
+  "DELIVERED",
+  "CANCELLED",
+] as const;
+
+export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
 export type OrderItem = {
   productId: number;

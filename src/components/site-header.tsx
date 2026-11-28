@@ -1,7 +1,7 @@
 import Form from "next/form"; import Link from "next/link"; import { Suspense } from "react"; import { logout } from "@/actions/auth"; import { Dropdown } from "@/components/dropdown"; 
 
 import { Skeleton, buttonClass } from "@/components/ui"; import { api } from "@/lib/api"; 
-import { getSession } from "@/lib/session"; import type { Cart, User } from "@/lib/types";
+import { getSession } from "@/lib/session"; import type { Cart } from "@/lib/types";
   /** 
 *	Сайтын толгой. 
 *	Лого, хайлт нь бүх хэрэглэгчид ижил тул static shell-д орно (шууд харагдана). 
@@ -49,14 +49,9 @@ async function UserArea() {   const session = await getSession();
   } 
   
   // Алдаа гарвал (backend унтарсан г.м.) толгойг эвдэхгүйн тулд null болгоно.
-  // Хоёр хүсэлт бие биенээсээ хамаарахгүй тул Promise.all-аар зэрэг явуулна.
-  const [user, cart] = await Promise.all([
-    api<User>("/users/me").catch(() => null),
-    api<Cart>("/users/me/cart").catch(() => null),
-  ]);
+  const cart = await api<Cart>("/users/me/cart").catch(() => null);
   const count = cart?.totalQuantity ?? 0;
-  // Овог, нэр хоёулаа хоосон эсвэл хүсэлт амжилтгүй бол нэвтрэх нэрийг харуулна
-  const displayName = [user?.lastName, user?.firstName].filter(Boolean).join(" ") || session.username;
+  const displayName = session.username;
     return ( 
     <div className="flex items-center gap-1"> 
       <Link href="/cart" className={buttonClass("ghost", "relative px-3")} aria-label={`Сагс, ${count} бараа`}> 
